@@ -3,12 +3,15 @@
 const mongoose = require('mongoose');
 
 const app = require('./app')
+const {mkdir} = require("fs/promises")
 
 const { DB_HOST, PORT = 3000 } = process.env;
 
 mongoose.connect(DB_HOST)
   .then(() => {
-    app.listen(PORT);
+    app.listen(PORT, async () => {
+      await mkdir(process.env.UPLOAD_FOLDER, { recursive: true }) 
+    })
     console.log("Database connection successful");
   })
   .catch(err => {
@@ -17,3 +20,4 @@ mongoose.connect(DB_HOST)
   })
 
 
+ 

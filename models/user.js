@@ -1,6 +1,7 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 const Joi = require('joi'); 
+const gravatar = require('gravatar');
 
 const userSchema = Schema ({
   password: {
@@ -21,6 +22,12 @@ const userSchema = Schema ({
     type: String,
     default: null,
   },
+  avatarUrl: {
+    type: String,
+    default: function () {
+      return gravatar.url(this.email, {s:'250'}, true)
+    }
+  }
 });
 
 userSchema.methods.comparePassword = function(password) {
