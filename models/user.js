@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 const Joi = require('joi'); 
 const gravatar = require('gravatar');
+const { bool, boolean } = require('joi');
 
 const userSchema = Schema ({
   password: {
@@ -12,6 +13,14 @@ const userSchema = Schema ({
     type: String,
     required: [true, 'Email is required'],
     unique: true,
+  },
+  verify: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
   },
   subscription: {
     type: String,

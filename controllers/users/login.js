@@ -2,9 +2,12 @@ const { User } = require('../../models');
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = process.env;
 
+
+
 const login = async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, verify: true });
+    console.log(user)
     if (!user || !user.comparePassword(password)) {
         res.status(401).json({ message: 'Email or password is wrong' });
     }

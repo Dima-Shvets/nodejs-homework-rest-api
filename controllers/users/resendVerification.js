@@ -1,27 +1,21 @@
 const { User } = require('../../models');
-const bcrypt = require('bcrypt');
-const sha256 = require('sha256');
-
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+const resendVerification = async (req, res) => {
+    const { email } = req.body;
 
+    if (!email) {
+        res.status(400).json({ message: 'missing required field email' });
+    }
 
-const signUp = async (req, res) => {
-
-    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if (user) {
-        res.status(409).json({ message: "Email in use" });
-    };
+    if (user.verify === true) {
+        res.status(400).json({ message: 'Verification has already been passed' });
+    }
 
-    const verificationToken = sha256(email + process.env.SECRET_KEY);
-
-    const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-
-    const {subscription} = await User.create({ email, password: hashPassword, verificationToken });
-
+    const { verificationToken } = user;
 
     const msg = {
   to: email, 
@@ -39,12 +33,7 @@ const signUp = async (req, res) => {
   .catch((error) => {
     console.log("Email error", error)
   })
-    
-    res.status(201).json({
-        status: "success", code: 201, user: {
-            email,
-            subscription,
-    }})
+    res.status(200).json({ message: 'Verification email sent' });
 }
 
-module.exports = signUp;
+module.exports = resendVerification
